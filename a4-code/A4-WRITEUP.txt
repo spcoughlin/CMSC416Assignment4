@@ -85,8 +85,8 @@ kmeans_cuda Timing Table
                                                Data File                     
    Program        digits_all_5e3.txt  digits_all_1e4.txt  digits_all_3e4.txt 
   ---------------------------------------------------------------------------
-   kmeans_serial               00.00               00.00               00.00 
-   kmeans_cuda                 00.00               00.00               00.00 
+   kmeans_serial                2.70               16.44               45.19
+   kmeans_cuda                  1.17                1.75                3.50
   ---------------------------------------------------------------------------
 
 
@@ -95,17 +95,48 @@ kmeans_cuda Discussion Questions
 
   Analyze your table of results and answer the following questions.
   1. Did using the GPU result in speedups?
+
+  Yes. On 5e3 it was about 2x faster, on 1e4 about 9x, and on 3e4
+  about 13x. The speedup scales up with data size since there's more
+  work to parallelize and the kernel launch overhead matters less.
+
   2. Describe your general approach on how you used GPU threads/blocks
      to parallelize the algorithm.
      - (A) How did you subdivide the Cluster Center Calculation Phase?
      - (B) How did you subdivide the Data Assignment Phase?
      Indicate how shared data was coordinated or if some redundant
      computations were done in order to avoid the need to coordinate.
+
+  Block size is 256 threads, number of blocks is ceil(ndata/256) for
+  data-parallel kernels and ceil(nclust*dim/256) for cluster-parallel
+  ones, derived from data size at runtime.
+
+  (A) One thread per data point reads its cluster assignment and uses
+  atomicAdd to accumulate its features into the cluster sum array.
+  This handles races when multiple threads write to the same cluster
+  without needing inter-block sync. A second kernel then divides each
+  sum by the count using one thread per (cluster, dim) cell.
+
+  (B) One thread per data point computes distance to all cluster
+  centers and picks the nearest. Reads of cluster centers are
+  uncoordinated since no thread writes them during this phase.
+  atomicAdd is used for the per-cluster count and global change counter.
+
   3. Describe the GPU kernels that you wrote and how they are used in
      the main computation to accomplish speedup.
 
-  It is expected that #2 and #3 will have some overlap: just be
-  reasonably specific about how you designed the computation.
+  reset_clust_kernel: zeroes the cluster feature sums and counts before
+  each iteration.
+
+  accumulate_kernel: one thread per data point, atomically adds its
+  features to its assigned cluster's sum and increments the count.
+
+  normalize_kernel: one thread per (cluster, dim) cell, divides the
+  accumulated sum by the count to get the new center.
+
+  assign_kernel: one thread per data point, finds the nearest center,
+  updates the assignment, and atomically tracks the new counts and
+  number of changes for convergence.
 
 
 Problem 3: Optional kmeans_blas
