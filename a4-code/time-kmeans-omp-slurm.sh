@@ -20,7 +20,7 @@
 # #SBATCH --mail-user=profk@umd.edu
 
 # ADJUST: location of project code with respect to home directory
-cd ~/416/solution-a4-416
+# # cd ~/416/solution-a4-416
 
 # function to time a command but suppress the time if it fails due to
 # errors; avoids reporting times on error runs that students often
