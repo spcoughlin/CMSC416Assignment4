@@ -154,8 +154,8 @@ kmeans_blas Timing Table
                                                Data File                     
    Program        digits_all_5e3.txt  digits_all_1e4.txt  digits_all_3e4.txt 
   ---------------------------------------------------------------------------
-   kmeans_serial               00.00               00.00               00.00 
-   kemans_blas                 00.00               00.00               00.00 
+   kmeans_serial               3.12               16.99               45.87 
+   kemans_blas                 3.18               16.95               46.06 
   ---------------------------------------------------------------------------
 
 
@@ -180,11 +180,18 @@ kmeans_blas Discussion Questions
   Analyze your table of results and answer the following questions.
   1. Did using the BLAS result in speedups? Describe what you see in the
      table.
+     No, there was not a significant speedup from the serial version. It was
+     even slower at times.
   2. Describe which section of the serial code you used BLAS to address
      the main computation sections of the algorithm. Indicate which BLAS
      functions that you used for these two:
      - (A) BLAS functions for the Cluster Center Calculation Phase
+     I used cblas_saxpy() to add each data point's feature vector into the sum
+     of its assigned clusted.
      - (B) BLAS functions for the Data Assignment Phase
+     I tried to experiment with BLAS functions for the Data Assignment Phase,
+     but ultimately decided to stay with the original serial distance loop since
+     BLAS resulted in changes in cluster assignments which caused the output to be mismatched.
 
 
 Work Disclosure
@@ -194,10 +201,10 @@ Work Disclosure
   assignment, the following people contributed ideas and discussion to
   the completion of this work INCLUDING course staff members. (Write
   NONE if no collaborators were involved.)
-  - Person 1 <person1@email.com> helped understand Problem X and the
-    meaning of ...
-  - Person 2 <person2@email.com> helped debug Code for Problem Y...
-  - etc.
+    - Person 1 <person1@email.com> helped understand Problem X and the
+      meaning of ...
+    - Person 2 <person2@email.com> helped debug Code for Problem Y...
+    - etc.
 
   (B) *Resource Utilization:* The following resources such as websites,
   course notes, artificial intelligence tools (LLMs/ChatBots/etc.) were
