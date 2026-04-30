@@ -201,24 +201,17 @@ Work Disclosure
   assignment, the following people contributed ideas and discussion to
   the completion of this work INCLUDING course staff members. (Write
   NONE if no collaborators were involved.)
-    - Person 1 <person1@email.com> helped understand Problem X and the
-      meaning of ...
-    - Person 2 <person2@email.com> helped debug Code for Problem Y...
-    - etc.
+
+  NONE
 
   (B) *Resource Utilization:* The following resources such as websites,
   course notes, artificial intelligence tools (LLMs/ChatBots/etc.) were
   utilized in the completion of this work. Include course materials such
   as textbooks and lecture slides as well. (Write NONE if no resources
   were used [which would be hard to believe]).
-  - Resource 1 is here <https://some.resource.org/useful_stuff.html> and
-    provided help for Problem Z to understand ....
-  - Resource 2 is the book "Parallel Analysis" by Auth Or with chapter 8
-    helping a lot with Problem W
-  - Resource 3 is here <https://airegurgitator.com> and provided AI
-    refinements for the writing of problem Q and helped debug code for
-    Problem N.
-  - etc.
+  - ChatGPT (OpenAI) was used to debug issues in running on Zaratan
+  - NotebookLM (Google) Assisted in general understanding of course material relevant for the assignment.
+  - Lecture slides were also referenced throughout
 
   (C) *Ownership of Work*: I / We affirm that all parties listed below
   have contributed to each solution presented in this document.  All
@@ -227,5 +220,4 @@ Work Disclosure
   with the course's PRIME DIRECTIVE.
 
   Signed,
-
-  TYPE NAME(S) OF SUBMITTERS
+  Sean Coughlin, Alec Agayan, Caitlin Yan

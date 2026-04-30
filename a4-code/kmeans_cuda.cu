@@ -21,19 +21,19 @@ int filestats(char *filename, ssize_t *tot_tokens, ssize_t *tot_lines);
     } while (0)
 
 typedef struct {
-    int    ndata;
-    int    dim;
+    int ndata;
+    int dim;
     float *features;
-    int   *assigns;
-    int   *labels;
-    int    nlabels;
+    int *assigns;
+    int *labels;
+    int nlabels;
 } KMData;
 
 typedef struct {
-    int    nclust;
-    int    dim;
+    int nclust;
+    int dim;
     float *features;
-    int   *counts;
+    int *counts;
 } KMClust;
 
 KMData kmdata_load(const char *datafile) {
@@ -48,11 +48,11 @@ KMData kmdata_load(const char *datafile) {
 
     int tokens_per_line = (int)(tot_tokens / tot_lines);
     data.ndata = (int)tot_lines;
-    data.dim   = tokens_per_line - 2;
+    data.dim = tokens_per_line - 2;
 
     data.features = (float *)malloc((size_t)data.ndata * (size_t)data.dim * sizeof(float));
-    data.assigns  = (int *)  malloc((size_t)data.ndata * sizeof(int));
-    data.labels   = (int *)  malloc((size_t)data.ndata * sizeof(int));
+    data.assigns = (int *)malloc((size_t)data.ndata * sizeof(int));
+    data.labels = (int *)malloc((size_t)data.ndata * sizeof(int));
 
     if (!data.features || !data.assigns || !data.labels) {
         printf("Memory allocation failed\n");
@@ -67,7 +67,7 @@ KMData kmdata_load(const char *datafile) {
 
     int max_label = -1;
     for (int i = 0; i < data.ndata; i++) {
-        int  label;
+        int label;
         char colon[8];
         fscanf(fin, "%d %7s", &label, colon);
         data.labels[i] = label;
@@ -88,10 +88,10 @@ KMData kmdata_load(const char *datafile) {
 KMClust kmclust_new(int nclust, int dim) {
     KMClust clust;
     clust.nclust = nclust;
-    clust.dim    = dim;
+    clust.dim = dim;
 
     clust.features = (float *)malloc((size_t)nclust * (size_t)dim * sizeof(float));
-    clust.counts   = (int *)  malloc((size_t)nclust * sizeof(int));
+    clust.counts = (int *)malloc((size_t)nclust * sizeof(int));
 
     if (!clust.features || !clust.counts) {
         printf("Memory allocation failed\n");
@@ -99,7 +99,7 @@ KMClust kmclust_new(int nclust, int dim) {
     }
 
     for (int i = 0; i < nclust * dim; i++) clust.features[i] = 0.0f;
-    for (int i = 0; i < nclust; i++)       clust.counts[i]   = 0;
+    for (int i = 0; i < nclust; i++) clust.counts[i] = 0;
 
     return clust;
 }
@@ -155,9 +155,9 @@ __global__ void reset_clust_kernel(float *clust_feat, int *clust_cnt,
 // Phase A part 1: one thread per data point accumulates its features into
 // its assigned cluster using atomicAdd to handle concurrent writes
 __global__ void accumulate_kernel(const float *data_feat,
-                                  const int   *data_assigns,
-                                  float       *clust_feat,
-                                  int         *clust_cnt,
+                                  const int *data_assigns,
+                                  float *clust_feat,
+                                  int *clust_cnt,
                                   int ndata, int dim) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= ndata) return;
@@ -185,15 +185,15 @@ __global__ void normalize_kernel(float *clust_feat, const int *clust_cnt,
 // Phase B: one thread per data point finds the nearest cluster center,
 // updates the assignment, tallies the new cluster count, and counts changes
 __global__ void assign_kernel(const float *data_feat,
-                              int         *data_assigns,
+                              int *data_assigns,
                               const float *clust_feat,
-                              int         *clust_cnt,
-                              int         *d_nchanges,
+                              int *clust_cnt,
+                              int *d_nchanges,
                               int ndata, int dim, int nclust) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= ndata) return;
 
-    int   best_clust  = 0;
+    int best_clust = 0;
     float best_distsq = FLT_MAX;
 
     for (int c = 0; c < nclust; c++) {
@@ -205,7 +205,7 @@ __global__ void assign_kernel(const float *data_feat,
         }
         if (distsq < best_distsq) {
             best_distsq = distsq;
-            best_clust  = c;
+            best_clust = c;
         }
     }
 
@@ -224,9 +224,9 @@ int main(int argc, char **argv) {
     }
 
     const char *datafile = argv[1];
-    int         nclust   = atoi(argv[2]);
-    const char *savedir  = ".";
-    int         MAXITER  = 100;
+    int nclust = atoi(argv[2]);
+    const char *savedir = ".";
+    int MAXITER = 100;
 
     if (argc > 3) savedir = argv[3];
     if (argc > 4) MAXITER = atoi(argv[4]);
@@ -236,10 +236,10 @@ int main(int argc, char **argv) {
     system(cmd);
 
     printf("datafile: %s\n", datafile);
-    printf("nclust: %d\n",   nclust);
-    printf("savedir: %s\n",  savedir);
+    printf("nclust: %d\n", nclust);
+    printf("savedir: %s\n", savedir);
 
-    KMData  data  = kmdata_load(datafile);
+    KMData data = kmdata_load(datafile);
     KMClust clust = kmclust_new(nclust, data.dim);
 
     printf("ndata: %d\n", data.ndata);
@@ -250,41 +250,41 @@ int main(int argc, char **argv) {
         data.assigns[i] = i % nclust;
     for (int c = 0; c < nclust; c++) {
         int icount = data.ndata / nclust;
-        int extra  = (c < (data.ndata % nclust)) ? 1 : 0;
+        int extra = (c < (data.ndata % nclust)) ? 1 : 0;
         clust.counts[c] = icount + extra;
     }
 
     // allocate device memory
-    int    ndata_h     = data.ndata;
-    int    dim_h       = data.dim;
-    size_t feat_bytes  = (size_t)ndata_h * dim_h * sizeof(float);
-    size_t asgn_bytes  = (size_t)ndata_h * sizeof(int);
-    size_t cfeat_bytes = (size_t)nclust  * dim_h * sizeof(float);
-    size_t ccnt_bytes  = (size_t)nclust  * sizeof(int);
+    int ndata_h = data.ndata;
+    int dim_h = data.dim;
+    size_t feat_bytes = (size_t)ndata_h * dim_h * sizeof(float);
+    size_t asgn_bytes = (size_t)ndata_h * sizeof(int);
+    size_t cfeat_bytes = (size_t)nclust * dim_h * sizeof(float);
+    size_t ccnt_bytes = (size_t)nclust * sizeof(int);
 
     float *d_data_feat;
-    int   *d_data_assigns;
+    int *d_data_assigns;
     float *d_clust_feat;
-    int   *d_clust_cnt;
-    int   *d_nchanges;
+    int *d_clust_cnt;
+    int *d_nchanges;
 
-    CUDA_CHECK(cudaMalloc((void **)&d_data_feat,    feat_bytes));
+    CUDA_CHECK(cudaMalloc((void **)&d_data_feat, feat_bytes));
     CUDA_CHECK(cudaMalloc((void **)&d_data_assigns, asgn_bytes));
-    CUDA_CHECK(cudaMalloc((void **)&d_clust_feat,   cfeat_bytes));
-    CUDA_CHECK(cudaMalloc((void **)&d_clust_cnt,    ccnt_bytes));
-    CUDA_CHECK(cudaMalloc((void **)&d_nchanges,     sizeof(int)));
+    CUDA_CHECK(cudaMalloc((void **)&d_clust_feat, cfeat_bytes));
+    CUDA_CHECK(cudaMalloc((void **)&d_clust_cnt, ccnt_bytes));
+    CUDA_CHECK(cudaMalloc((void **)&d_nchanges, sizeof(int)));
 
-    CUDA_CHECK(cudaMemcpy(d_data_feat,    data.features, feat_bytes, cudaMemcpyHostToDevice));
-    CUDA_CHECK(cudaMemcpy(d_data_assigns, data.assigns,  asgn_bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_data_feat, data.features, feat_bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_data_assigns, data.assigns, asgn_bytes, cudaMemcpyHostToDevice));
 
     // grid dimensions derived from data size
-    int blocks_data  = (ndata_h + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    int total_cfeat  = nclust * dim_h;
+    int blocks_data = (ndata_h + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    int total_cfeat = nclust * dim_h;
     int blocks_cfeat = (total_cfeat + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    int reset_elems  = (total_cfeat > nclust) ? total_cfeat : nclust;
+    int reset_elems = (total_cfeat > nclust) ? total_cfeat : nclust;
     int blocks_reset = (reset_elems + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
-    int curiter  = 1;
+    int curiter = 1;
     int nchanges = ndata_h;
 
     printf("==CLUSTERING: MAXITER %d==\n", MAXITER);
@@ -313,7 +313,7 @@ int main(int argc, char **argv) {
         // Phase B: assign each data point to nearest center
         // reset counts and change counter, restore the centers
         CUDA_CHECK(cudaMemset(d_clust_cnt, 0, ccnt_bytes));
-        CUDA_CHECK(cudaMemset(d_nchanges,  0, sizeof(int)));
+        CUDA_CHECK(cudaMemset(d_nchanges, 0, sizeof(int)));
         CUDA_CHECK(cudaMemcpy(d_clust_feat, clust.features,
                               cfeat_bytes, cudaMemcpyHostToDevice));
 
@@ -323,8 +323,8 @@ int main(int argc, char **argv) {
         CUDA_CHECK(cudaGetLastError());
         CUDA_CHECK(cudaDeviceSynchronize());
 
-        CUDA_CHECK(cudaMemcpy(&nchanges,    d_nchanges,  sizeof(int),  cudaMemcpyDeviceToHost));
-        CUDA_CHECK(cudaMemcpy(clust.counts, d_clust_cnt, ccnt_bytes,   cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(&nchanges, d_nchanges, sizeof(int), cudaMemcpyDeviceToHost));
+        CUDA_CHECK(cudaMemcpy(clust.counts, d_clust_cnt, ccnt_bytes, cudaMemcpyDeviceToHost));
 
         printf("%3d: %5d |", curiter, nchanges);
         for (int c = 0; c < nclust; c++)
