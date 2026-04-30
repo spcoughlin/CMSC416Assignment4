@@ -187,11 +187,12 @@ kmeans_blas Discussion Questions
      functions that you used for these two:
      - (A) BLAS functions for the Cluster Center Calculation Phase
      I used cblas_saxpy() to add each data point's feature vector into the sum
-     of its assigned cluster.
+     of its assigned clusted.
      - (B) BLAS functions for the Data Assignment Phase
      I tried to experiment with BLAS functions for the Data Assignment Phase,
      but ultimately decided to stay with the original serial distance loop since
      BLAS resulted in changes in cluster assignments which caused the output to be mismatched.
+
 
 
 Work Disclosure
@@ -202,23 +203,13 @@ Work Disclosure
   the completion of this work INCLUDING course staff members. (Write
   NONE if no collaborators were involved.)
 
-<<<<<<< HEAD
   NONE
-=======
-   NONE
->>>>>>> 81958bd6a69285625361e22b5c6a0826c8b543c1
 
   (B) *Resource Utilization:* The following resources such as websites,
   course notes, artificial intelligence tools (LLMs/ChatBots/etc.) were
   utilized in the completion of this work. Include course materials such
   as textbooks and lecture slides as well. (Write NONE if no resources
   were used [which would be hard to believe]).
-<<<<<<< HEAD
-  - ChatGPT (OpenAI) was used to debug issues in running on Zaratan
-  - NotebookLM (Google) Assisted in general understanding of course material relevant for the assignment.
-  - Lecture slides were also referenced throughout
-=======
->>>>>>> 81958bd6a69285625361e22b5c6a0826c8b543c1
 
   - The resources available on the class website https://www.cs.umd.edu/~profk/416/schedule.html
   including slides, videos, guides, code samples, etc. were used to help support the learning 
@@ -227,7 +218,9 @@ Work Disclosure
   assisted in all of our understanding of the class material, but was not used in the 
   generation of solutions.
   - ChatGPT (OpenAI) was used to help debug issues on P3 with issues with compiling that 
-  originated from differences between the local environment and Zaratan.
+  originated from differences between the local environment and Zaratan. Also used on P1 for help
+  with running on zaratan.
+
   (C) *Ownership of Work*: I / We affirm that all parties listed below
   have contributed to each solution presented in this document.  All
   parties are capable of describing how the solutions were derived, how
@@ -235,8 +228,5 @@ Work Disclosure
   with the course's PRIME DIRECTIVE.
 
   Signed,
-<<<<<<< HEAD
-=======
-
->>>>>>> 81958bd6a69285625361e22b5c6a0826c8b543c1
   Sean Coughlin, Alec Agayan, Caitlin Yan
+
