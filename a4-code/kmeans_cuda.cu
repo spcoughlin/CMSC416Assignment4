@@ -7,7 +7,6 @@
 #include <float.h>
 #include <sys/types.h>
 
-// filestats is in kmeans_util.cu (symlinked from kmeans_util.c)
 int filestats(char *filename, ssize_t *tot_tokens, ssize_t *tot_lines);
 
 #define CUDA_CHECK(call)                                                 \

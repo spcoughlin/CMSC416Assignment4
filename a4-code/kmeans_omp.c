@@ -1,16 +1,4 @@
-// kmeans_omp.c: OpenMP-parallelized K-Means clustering (Problem 1)
-
-// Parallelization Strategy:
-// Phase 1:
-// multiple threads may try to add to the same cluster center, like
-// the pi calculation example.
-// Liek the example, give each a private copy of the cluster feature arr and
-// the count arr
-//
-// Phase 2:
-// clust.counts[best_clust]++ can be hit by multiple threads
-// use atomic
-// use openmp reduction for nchanges
+// kmeans_omp.c for problem 1
 
 #include <stdio.h>
 #include <stdlib.h>
